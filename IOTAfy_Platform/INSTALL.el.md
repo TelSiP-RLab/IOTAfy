@@ -273,6 +273,65 @@ php reset_admin.php
 30 3 * * * cd /var/www/devices && ./backup.sh >> logs/server.log 2>&1
 ```
 
+### Monitoring συσκευών (Linux)
+
+Για να παρακολουθείτε αυτόματα την κατάσταση των συσκευών, προσθέστε ένα cron job που τρέχει το `monitor_devices.php` τακτικά (π.χ. κάθε λεπτό).
+
+**Παράδειγμα cron** (κάθε λεπτό):
+
+```bash
+*/1 * * * * echo "\n==== $(date '+\%Y-\%m-\%d \%H:\%M:\%S') ====" >> /path/to/devices/logs/monitor.log && /usr/bin/php /path/to/devices/monitor_devices.php >> /path/to/devices/logs/monitor.log 2>&1
+```
+
+**Συγκεκριμένο παράδειγμα** (προσαρμόστε τις διαδρομές):
+
+```bash
+*/1 * * * * echo "\n==== $(date '+\%Y-\%m-\%d \%H:\%M:\%S') ====" >> /home/protontech/web/icp.protontech.gr/public_html/devices/logs/monitor.log && /usr/bin/php /home/protontech/web/icp.protontech.gr/public_html/devices/monitor_devices.php >> /home/protontech/web/icp.protontech.gr/public_html/devices/logs/monitor.log 2>&1
+```
+
+**Σημείωση**: Αντικαταστήστε `/path/to/devices` με την πραγματική διαδρομή του project σας και `/usr/bin/php` με τη διαδρομή του PHP executable (εύρεση με `which php`).
+
+### Monitoring συσκευών (Windows)
+
+Για να παρακολουθείτε αυτόματα την κατάσταση των συσκευών στο Windows, χρησιμοποιήστε το Task Scheduler.
+
+**Μέθοδος 1: PowerShell Script + Task Scheduler**
+
+1. Δημιουργήστε ένα PowerShell script `monitor_devices.ps1`:
+
+```powershell
+# monitor_devices.ps1
+$logFile = "C:\inetpub\wwwroot\devices\logs\monitor.log"
+$phpPath = "C:\php\php.exe"  # Προσαρμόστε τη διαδρομή του PHP
+$scriptPath = "C:\inetpub\wwwroot\devices\monitor_devices.php"  # Προσαρμόστε τη διαδρομή
+
+$timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Add-Content -Path $logFile -Value "`n==== $timestamp ===="
+& $phpPath $scriptPath | Add-Content -Path $logFile
+```
+
+2. Δημιουργήστε Scheduled Task:
+   - Ανοίξτε το **Task Scheduler**
+   - Κάντε κλικ **Create Basic Task**
+   - Όνομα: "Monitor Devices"
+   - Trigger: **Daily** → Επιλέξτε **Repeat task every: 1 minute** για 24 ώρες
+   - Action: **Start a program**
+   - Program: `powershell.exe`
+   - Arguments: `-ExecutionPolicy Bypass -File "C:\inetpub\wwwroot\devices\monitor_devices.ps1"`
+
+**Μέθοδος 2: Απευθείας με Task Scheduler (χωρίς script)**
+
+1. Δημιουργήστε Scheduled Task:
+   - Program: `C:\php\php.exe` (προσαρμόστε τη διαδρομή)
+   - Arguments: `C:\inetpub\wwwroot\devices\monitor_devices.php >> C:\inetpub\wwwroot\devices\logs\monitor.log 2>&1`
+   - Trigger: **Daily** → **Repeat task every: 1 minute** για 24 ώρες
+
+**Σημείωση**: Στο Windows, για να τρέχει κάθε λεπτό, χρειάζεται να ορίσετε το trigger ως Daily με repetition κάθε 1 λεπτό. Εναλλακτικά, χρησιμοποιήστε το **schtasks** command line:
+
+```powershell
+schtasks /create /tn "Monitor Devices" /tr "C:\php\php.exe C:\inetpub\wwwroot\devices\monitor_devices.php >> C:\inetpub\wwwroot\devices\logs\monitor.log 2>&1" /sc minute /mo 1 /f
+```
+
 ### Windows
 
 Χρησιμοποιήστε Task Scheduler με PowerShell script που τρέχει `sqlite3 ".dump"` και κρατά αρχεία με timestamp.

@@ -193,7 +193,40 @@ IIS:
   - Use backup.sh or your own cron job
   - Example cron (daily at 03:30):
     30 3 * * * cd /var/www/devices && ./backup.sh >> logs/server.log 2>&1
-- Windows: Use Task Scheduler with a PowerShell script calling sqlite3 ".dump" and store timestamped files
+- Device monitoring (Linux):
+  - To automatically monitor device status, add a cron job that runs monitor_devices.php regularly (e.g., every minute)
+  - Example cron (every minute):
+    */1 * * * * echo "\n==== $(date '+\%Y-\%m-\%d \%H:\%M:\%S') ====" >> /path/to/devices/logs/monitor.log && /usr/bin/php /path/to/devices/monitor_devices.php >> /path/to/devices/logs/monitor.log 2>&1
+  - Specific example (adjust paths):
+    */1 * * * * echo "\n==== $(date '+\%Y-\%m-\%d \%H:\%M:\%S') ====" >> /home/protontech/web/icp.protontech.gr/public_html/devices/logs/monitor.log && /usr/bin/php /home/protontech/web/icp.protontech.gr/public_html/devices/monitor_devices.php >> /home/protontech/web/icp.protontech.gr/public_html/devices/logs/monitor.log 2>&1
+  - Note: Replace /path/to/devices with your actual project path and /usr/bin/php with your PHP executable path (find with: which php)
+- Device monitoring (Windows):
+  - To automatically monitor device status on Windows, use Task Scheduler
+  - Method 1: PowerShell Script + Task Scheduler
+    1. Create a PowerShell script monitor_devices.ps1:
+       $logFile = "C:\inetpub\wwwroot\devices\logs\monitor.log"
+       $phpPath = "C:\php\php.exe"  # Adjust PHP path
+       $scriptPath = "C:\inetpub\wwwroot\devices\monitor_devices.php"  # Adjust script path
+       $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+       Add-Content -Path $logFile -Value "`n==== $timestamp ===="
+       & $phpPath $scriptPath | Add-Content -Path $logFile
+    2. Create Scheduled Task:
+       - Open Task Scheduler
+       - Click Create Basic Task
+       - Name: "Monitor Devices"
+       - Trigger: Daily → Select "Repeat task every: 1 minute" for 24 hours
+       - Action: Start a program
+       - Program: powershell.exe
+       - Arguments: -ExecutionPolicy Bypass -File "C:\inetpub\wwwroot\devices\monitor_devices.ps1"
+  - Method 2: Direct Task Scheduler (without script)
+    1. Create Scheduled Task:
+       - Program: C:\php\php.exe (adjust path)
+       - Arguments: C:\inetpub\wwwroot\devices\monitor_devices.php >> C:\inetpub\wwwroot\devices\logs\monitor.log 2>&1
+       - Trigger: Daily → Repeat task every: 1 minute for 24 hours
+  - Alternative: Use schtasks command line:
+    schtasks /create /tn "Monitor Devices" /tr "C:\php\php.exe C:\inetpub\wwwroot\devices\monitor_devices.php >> C:\inetpub\wwwroot\devices\logs\monitor.log 2>&1" /sc minute /mo 1 /f
+  - Note: On Windows, to run every minute, set the trigger as Daily with repetition every 1 minute
+- Windows (Backup): Use Task Scheduler with a PowerShell script calling sqlite3 ".dump" and store timestamped files
 - Logs: Monitor logs/server.log and logs/monitor.log. The app performs daily/size-based rotation
 
 ────────────────────────────────────────────────────────────────────────────
