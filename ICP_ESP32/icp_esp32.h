@@ -43,6 +43,7 @@ public:
     String getCurrentTime();
     String getUptime();
     String getBoardType() { return ESP32BoardConfig::getBoardName(); }
+    int getFirmwareVersion() { return _fwVersion; }
     
 private:
     // Pin configurations
