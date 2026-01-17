@@ -6,7 +6,7 @@
 // LED Pin = 48 (για ESP32-S3)
 // Reset Button Pin = 0
 // Firmware Version = 79
-ICP_ESP32 icp(48, 0, 81);
+ICP_ESP32 icp(8, 0, 88);
 
 void setup() {
     // Αρχικοποίηση της συσκευής
@@ -15,6 +15,8 @@ void setup() {
     // Εκτύπωση πληροφοριών για την πλακέτα
     Serial.print("Τύπος πλακέτας: ");
     Serial.println(icp.getBoardType());
+    Serial.print("Έκδοση firmware: ");
+    Serial.println(icp.getFirmwareVersion());
 }
 
 void loop() {
@@ -29,10 +31,13 @@ void loop() {
         Serial.println("Κατάσταση συσκευής:");
         Serial.print("- Όνομα συσκευής: ");
         Serial.println(icp.getDeviceName());
+        Serial.print("- Έκδοση firmware: ");
+        Serial.println(icp.getFirmwareVersion());
         Serial.print("- Χρόνος λειτουργίας: ");
         Serial.println(icp.getUptime());
         Serial.print("- Τρέχουσα ώρα: ");
         Serial.println(icp.getCurrentTime());
+
     }
     
     delay(5000); // Καθυστέρηση 5 δευτερολέπτων
