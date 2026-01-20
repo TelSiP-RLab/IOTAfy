@@ -505,7 +505,7 @@ function renderPaginationControls($current_page, $total_pages, $search, $items_p
                                         </div>
                                         <div class="mt-2">
                                             <small class="text-muted">
-                                                <i class="fas fa-key"></i> Authkey: <?php echo htmlspecialchars($user['authkey']); ?>
+                                                <i class="fas fa-key"></i> Authkey: <?php echo htmlspecialchars($user['authkey'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                                             </small>
                                         </div>
                                         <div class="mt-2">
