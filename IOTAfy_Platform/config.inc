@@ -16,7 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Resolve paths relative to project root for portability across servers
 $ROOT_DIR = realpath(__DIR__);
-define("DB_PATH", $ROOT_DIR . DIRECTORY_SEPARATOR . "device_info.db");
+define("DB_PATH", $ROOT_DIR . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "device_info.db");
 define("LOG_FILE", $ROOT_DIR . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . "server.log");
 define("MONITOR_LOG_FILE", $ROOT_DIR . DIRECTORY_SEPARATOR . "logs" . DIRECTORY_SEPARATOR . "monitor.log");
 define("BASE_DIR", $ROOT_DIR . DIRECTORY_SEPARATOR . "firmware" . DIRECTORY_SEPARATOR);
