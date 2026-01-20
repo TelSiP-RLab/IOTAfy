@@ -10,23 +10,18 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Validate input
-if (!isset($_GET['user_id'])) {
-    http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Missing user_id']);
-    exit;
-}
-
-$requestedUserId = filter_var($_GET['user_id'], FILTER_VALIDATE_INT);
-if ($requestedUserId === false) {
+// Validate input (allow numeric strings, cast safely to int)
+$requestedUserId = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
+if ($requestedUserId <= 0) {
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Invalid user_id']);
     exit;
 }
 
-// Authorization: allow only self or admin
-$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-if (!$isAdmin && (int)$_SESSION['user_id'] !== (int)$requestedUserId) {
+// Authorization: allow only self or privileged roles (admin / superuser)
+$role = $_SESSION['role'] ?? null;
+$isPrivileged = in_array($role, ['admin', 'superuser'], true);
+if (!$isPrivileged && (int)$_SESSION['user_id'] !== (int)$requestedUserId) {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'Forbidden']);
     exit;

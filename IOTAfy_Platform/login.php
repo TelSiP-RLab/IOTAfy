@@ -15,9 +15,9 @@ function getClientIp() {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and validate inputs
-    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
-    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+    // Sanitize and validate inputs (avoid deprecated FILTER_SANITIZE_STRING)
+    $username = trim((string)($_POST['username'] ?? ''));
+    $password = (string)($_POST['password'] ?? '');
     $ip_address = getClientIp(); // Get the client's IP address
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
     $additional_info = json_encode([

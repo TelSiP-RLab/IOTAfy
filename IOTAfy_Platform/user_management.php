@@ -477,8 +477,8 @@ function renderPaginationControls($current_page, $total_pages, $search, $items_p
                                             <?php endif; ?>
                                         </h5>
                                         <p class="card-text">
-                                            <i class="fas fa-user"></i> <?php echo htmlspecialchars($user['full_name']); ?><br>
-                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?>
+                                            <i class="fas fa-user"></i> <?php echo htmlspecialchars($user['full_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?><br>
+                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                                         </p>
                                         <div class="user-info">
                                             <span class="status-badge <?php echo $user['is_locked'] ? 'status-locked' : ($user['is_active'] ? 'status-active' : 'status-secondary'); ?>">
@@ -511,18 +511,29 @@ function renderPaginationControls($current_page, $total_pages, $search, $items_p
                                         <div class="mt-2">
                                             <small class="text-muted">
                                                 <i class="fas fa-microchip"></i> Devices:
-                                    <?php
-                                    $user_devices = getUserDevices($user['id']);
-                                    if (empty($user_devices)) {
-                                                    echo "No devices assigned";
-                                    } else {
-                                        foreach ($user_devices as $device) {
-                                                        echo "<br>" . htmlspecialchars($device['name']);
+                                                <?php
+                                                $user_devices = getUserDevices($user['id']);
+                                                if (empty($user_devices)) {
+                                                    echo " No devices assigned";
+                                                } else {
+                                                    foreach ($user_devices as $device) {
+                                                        echo "<br>" . htmlspecialchars($device['name'] ?? '', ENT_QUOTES, 'UTF-8');
                                                     }
                                                 }
                                                 ?>
                                             </small>
                                         </div>
+                                        <?php if (!empty($user_devices)): ?>
+                                            <!-- Hidden select per user to τροφοδοτεί το Unassign modal χωρίς AJAX -->
+                                            <select id="user-devices-<?php echo $user['id']; ?>" class="d-none">
+                                                <?php foreach ($user_devices as $device): ?>
+                                                    <option value="<?php echo $device['id']; ?>">
+                                                        <?php echo htmlspecialchars($device['name'] ?? 'Unnamed', ENT_QUOTES, 'UTF-8'); ?>
+                                                        (<?php echo htmlspecialchars($device['mac'] ?? 'n/a', ENT_QUOTES, 'UTF-8'); ?>)
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="action-buttons">
                                         <a href="edit_user.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-info" title="Edit User">
@@ -531,10 +542,7 @@ function renderPaginationControls($current_page, $total_pages, $search, $items_p
                                         <a href="assign_user_groups.php?id=<?php echo $user['id']; ?>" class="btn btn-sm btn-primary" title="Assign Groups">
                                             <i class="fas fa-users"></i>
                                         </a>
-                                        <?php 
-                                        $user_devices = getUserDevices($user['id']);
-                                        if (!empty($user_devices)): 
-                                        ?>
+                                        <?php if (!empty($user_devices)): ?>
                                             <button type="button" class="btn btn-sm btn-danger" title="Unassign Device" data-toggle="modal" data-target="#unassignDeviceModal" data-user-id="<?php echo $user['id']; ?>">
                                                 <i class="fas fa-minus-circle"></i>
                                             </button>
@@ -717,32 +725,18 @@ function renderPaginationControls($current_page, $total_pages, $search, $items_p
             var modal = $(this);
             modal.find('#unassign_user_id').val(userId);
 
-            // Fetch user's devices
-            $.ajax({
-                url: 'get_user_devices.php',
-                method: 'GET',
-                dataType: 'json',
-                data: { user_id: userId },
-                success: function(devices) {
-                    var select = modal.find('#unassign_device_id');
-                    select.empty();
-                    if (Array.isArray(devices) && devices.length > 0) {
-                        devices.forEach(function(device) {
-                            var name = device.name || 'Unnamed';
-                            var mac = device.mac || 'n/a';
-                            select.append('<option value="' + device.id + '">' + name + ' (' + mac + ')</option>');
-                        });
-                    } else {
-                        select.append('<option value="" disabled selected>No devices assigned</option>');
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('Error fetching devices: ', textStatus, errorThrown, jqXHR.responseText);
-                    var select = modal.find('#unassign_device_id');
-                    select.empty();
-                    select.append('<option value="" disabled selected>Error loading devices</option>');
-                }
-            });
+            var select = modal.find('#unassign_device_id');
+            select.empty();
+
+            // Παίρνουμε τις συσκευές από το κρυφό select του συγκεκριμένου user
+            var source = $('#user-devices-' + userId);
+            if (source.length && source.find('option').length) {
+                source.find('option').each(function () {
+                    select.append($(this).clone());
+                });
+            } else {
+                select.append('<option value="" disabled selected>No devices assigned</option>');
+            }
         });
     </script>
 </body>

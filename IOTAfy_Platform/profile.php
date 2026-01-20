@@ -358,22 +358,22 @@ if (isset($_POST['regenerate_authkey'])) {
 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                    <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="full_name">Full Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="token">Telegram Bot Token</label>
-                    <input type="text" class="form-control" id="token" name="token" value="<?php echo htmlspecialchars($user['token']); ?>">
+                    <input type="text" class="form-control" id="token" name="token" value="<?php echo htmlspecialchars($user['token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="form-group">
                     <label for="chat_id">Telegram Chat ID</label>
-                    <input type="text" class="form-control" id="chat_id" name="chat_id" value="<?php echo htmlspecialchars($user['chat_id']); ?>">
+                    <input type="text" class="form-control" id="chat_id" name="chat_id" value="<?php echo htmlspecialchars($user['chat_id'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="form-group">
@@ -388,7 +388,7 @@ if (isset($_POST['regenerate_authkey'])) {
                 <div class="form-group">
                     <label for="authkey">Authkey</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="authkey" name="authkey" value="<?php echo htmlspecialchars($user['authkey']); ?>" readonly>
+                        <input type="text" class="form-control" id="authkey" name="authkey" value="<?php echo htmlspecialchars($user['authkey'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" readonly>
                         <div class="input-group-append">
                             <button type="submit" name="regenerate_authkey" class="btn btn-warning" onclick="return confirm('Please be advised that regenerating the authentication key will result in the loss of connection with your devices. Do you want to proceed?');">
                                 <i class="fas fa-sync"></i> Regenerate
@@ -498,6 +498,5 @@ if (isset($_POST['regenerate_authkey'])) {
     </script>
 </body>
 </html>
-
 
 
