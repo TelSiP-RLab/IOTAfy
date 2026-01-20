@@ -414,7 +414,17 @@ try {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <center>IOTAfy<br>Devices Management Platform<br>created by<br>Ioannis Panagou</center>
+                    <center>
+                        <strong>IOTAfy</strong><br>
+                        Devices Management Platform<br>
+                        <br>
+                        <strong>University of West Attica</strong><br>
+                        <strong>TelSiP Research Lab</strong><br>
+                        <br>
+                        Created by: Ioannis Panagou<br>
+                        <br>
+                        &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -489,6 +499,18 @@ try {
             performSearch();
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

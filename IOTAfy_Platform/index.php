@@ -222,14 +222,14 @@ try {
                     <tbody>
                         <?php foreach ($devices as $device): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($device['name']); ?></td>
+                                <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
                                 <td>
-                                    <span class="status-badge status-<?php echo strtolower($device['status']); ?>">
-                                        <?php echo $device['status']; ?>
+                                    <span class="status-badge status-<?php echo strtolower($device['status'] ?? ''); ?>">
+                                        <?php echo htmlspecialchars($device['status'] ?? ''); ?>
                                     </span>
                                 </td>
-                                <td><?php echo htmlspecialchars($device['mac']); ?></td>
-                                <td><?php echo htmlspecialchars($device['ip']); ?></td>
+                                <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($device['ip'] ?? ''); ?></td>
                                 <td>
                                     <?php 
                                     if ($device['last_ping']) {
@@ -279,17 +279,17 @@ try {
                     <tbody>
                         <?php foreach ($group_devices as $device): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($device['name']); ?></td>
+                                <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
                                 <td>
-                                    <span class="status-badge status-<?php echo strtolower($device['status']); ?>">
-                                        <?php echo $device['status']; ?>
+                                    <span class="status-badge status-<?php echo strtolower($device['status'] ?? ''); ?>">
+                                        <?php echo htmlspecialchars($device['status'] ?? ''); ?>
                                     </span>
                                 </td>
-                                <td><?php echo htmlspecialchars($device['mac']); ?></td>
-                                <td><?php echo htmlspecialchars($device['ip']); ?></td>
+                                <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($device['ip'] ?? ''); ?></td>
                                 <td>
-                                    <?php echo htmlspecialchars($device['full_name']); ?>
-                                    <small class="text-muted">(<?php echo htmlspecialchars($device['username']); ?>)</small>
+                                    <?php echo htmlspecialchars($device['full_name'] ?? ''); ?>
+                                    <small class="text-muted">(<?php echo htmlspecialchars($device['username'] ?? ''); ?>)</small>
                                 </td>
                                 <td>
                                     <?php 
@@ -320,7 +320,17 @@ try {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <center>IOTAfy<br>Devices Management Platform<br>created by<br>Ioannis Panagou</center>
+                    <center>
+                        <strong>IOTAfy</strong><br>
+                        Devices Management Platform<br>
+                        <br>
+                        <strong>University of West Attica</strong><br>
+                        <strong>TelSiP Research Lab</strong><br>
+                        <br>
+                        Created by: Ioannis Panagou<br>
+                        <br>
+                        &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -332,6 +342,18 @@ try {
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

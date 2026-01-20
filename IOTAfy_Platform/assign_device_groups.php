@@ -186,13 +186,13 @@ try {
             <h4>Device Details</h4>
             <div class="row">
                 <div class="col-md-4">
-                    <p><strong>MAC Address:</strong> <?php echo htmlspecialchars($device['mac']); ?></p>
+                    <p><strong>MAC Address:</strong> <?php echo htmlspecialchars($device['mac'] ?? ''); ?></p>
                 </div>
                 <div class="col-md-4">
-                    <p><strong>Internal IP:</strong> <?php echo htmlspecialchars($device['ip']); ?></p>
+                    <p><strong>Internal IP:</strong> <?php echo htmlspecialchars($device['ip'] ?? ''); ?></p>
                 </div>
                 <div class="col-md-4">
-                    <p><strong>External IP:</strong> <?php echo htmlspecialchars($device['external_ip']); ?></p>
+                    <p><strong>External IP:</strong> <?php echo htmlspecialchars($device['external_ip'] ?? ''); ?></p>
                 </div>
             </div>
         </div>
@@ -289,6 +289,18 @@ try {
             });
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

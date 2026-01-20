@@ -137,6 +137,7 @@ function monitorLog($message) {
  */
 function redactSecrets($text) {
     $mask = function ($secret) {
+        $secret = (string)($secret ?? '');
         $len = strlen($secret);
         if ($len <= 8) {
             return str_repeat('*', max(3, $len));

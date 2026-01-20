@@ -345,7 +345,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['restart_device']) && v
             $verboseLog = stream_get_contents($verbose);
             fclose($verbose);
             
-            curl_close($ch);
+            // curl_close() deprecated since PHP 8.5 - cURL handle closes automatically
+            // curl_close($ch);
             
             if ($httpCode >= 200 && $httpCode < 300) {
                 $message = "Device restart command executed successfully.";
@@ -514,12 +515,12 @@ $token = generateToken();
                 <tbody>
                     <?php foreach ($devices as $device): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($device['name']); ?></td>
-                            <td><?php echo htmlspecialchars($device['ip']); ?></td>
-                            <td><?php echo htmlspecialchars($device['mac']); ?></td>
-                            <td><?php echo htmlspecialchars($device['device_id']); ?></td>
-                            <td><?php echo htmlspecialchars($device['firmware_version']); ?></td>
-                            <td><?php echo htmlspecialchars($device['external_ip']); ?></td>
+                            <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['ip'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['device_id'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['firmware_version'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['external_ip'] ?? ''); ?></td>
                             <td>
                                 <?php
                                 $stmt = $db->prepare("SELECT g.name FROM groups g JOIN device_groups dg ON g.id = dg.group_id WHERE dg.device_id = :device_id");
@@ -555,7 +556,7 @@ $token = generateToken();
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="uploadModalLabel<?php echo $device['id']; ?>">Upload .bin for <?php echo htmlspecialchars($device['name']); ?></h5>
+                                                <h5 class="modal-title" id="uploadModalLabel<?php echo $device['id']; ?>">Upload .bin for <?php echo htmlspecialchars($device['name'] ?? ''); ?></h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -577,7 +578,7 @@ $token = generateToken();
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="updateModalLabel<?php echo $device['id']; ?>">Update Firmware Version for <?php echo htmlspecialchars($device['name']); ?></h5>
+                                                <h5 class="modal-title" id="updateModalLabel<?php echo $device['id']; ?>">Update Firmware Version for <?php echo htmlspecialchars($device['name'] ?? ''); ?></h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -599,7 +600,7 @@ $token = generateToken();
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="loadModalLabel<?php echo $device['id']; ?>">Load Firmware from Archive for <?php echo htmlspecialchars($device['name']); ?></h5>
+                                                <h5 class="modal-title" id="loadModalLabel<?php echo $device['id']; ?>">Load Firmware from Archive for <?php echo htmlspecialchars($device['name'] ?? ''); ?></h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -630,7 +631,7 @@ $token = generateToken();
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="restartModalLabel<?php echo $device['id']; ?>">Restart Device: <?php echo htmlspecialchars($device['name']); ?></h5>
+                                                <h5 class="modal-title" id="restartModalLabel<?php echo $device['id']; ?>">Restart Device: <?php echo htmlspecialchars($device['name'] ?? ''); ?></h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -642,8 +643,8 @@ $token = generateToken();
                                                     <div class="form-group">
                                                         <label>IP Address Type:</label>
                                                         <select name="ip_type" class="form-control" required>
-                                                            <option value="internal">Internal IP (<?php echo htmlspecialchars($device['ip']); ?>)</option>
-                                                            <option value="external">External IP (<?php echo htmlspecialchars($device['external_ip']); ?>)</option>
+                                                            <option value="internal">Internal IP (<?php echo htmlspecialchars($device['ip'] ?? ''); ?>)</option>
+                                                            <option value="external">External IP (<?php echo htmlspecialchars($device['external_ip'] ?? ''); ?>)</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group">
@@ -689,7 +690,17 @@ $token = generateToken();
                     </button>
                 </div>
                 <div class="modal-body">
-                    <center>IOTAfy<br>Devices Management Platform<br>created by<br>Ioannis Panagou</center>
+                    <center>
+                        <strong>IOTAfy</strong><br>
+                        Devices Management Platform<br>
+                        <br>
+                        <strong>University of West Attica</strong><br>
+                        <strong>TelSiP Research Lab</strong><br>
+                        <br>
+                        Created by: Ioannis Panagou<br>
+                        <br>
+                        &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -711,6 +722,18 @@ $token = generateToken();
             });
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

@@ -95,13 +95,13 @@ $devices = $devices_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php foreach ($devices as $device): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($device['name']); ?></td>
-                            <td><?php echo htmlspecialchars($device['ip']); ?></td>
-                            <td><?php echo htmlspecialchars($device['mac']); ?></td>
-                            <td><?php echo htmlspecialchars($device['device_id']); ?></td>
-                            <td><?php echo htmlspecialchars($device['firmware_version']); ?></td>
-                            <td class="<?php echo $device['status'] == 'up' ? 'status-online' : 'status-offline'; ?>">
-                                <?php echo htmlspecialchars($device['status']); ?>
+                            <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['ip'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['device_id'] ?? ''); ?></td>
+                            <td><?php echo htmlspecialchars($device['firmware_version'] ?? ''); ?></td>
+                            <td class="<?php echo ($device['status'] ?? '') == 'up' ? 'status-online' : 'status-offline'; ?>">
+                                <?php echo htmlspecialchars($device['status'] ?? ''); ?>
                             </td>
                             <?php if (checkPermission('edit_device') || checkPermission('delete_device') || checkPermission('generate_firmware_file')): ?>
                                 <td class="actions">
@@ -135,6 +135,18 @@ $devices = $devices_stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

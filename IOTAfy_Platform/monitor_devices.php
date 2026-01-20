@@ -54,7 +54,8 @@ function sendNotification($deviceRow, $status) {
         $curlErrNo = curl_errno($curl);
         $curlErr = curl_error($curl);
         $httpCode = (int)curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
+        // curl_close() deprecated since PHP 8.5 - cURL handle closes automatically
+        // curl_close($curl);
 
         if ($response === false) {
             logMessage("Telegram cURL error ({$curlErrNo}) for chat_id {$userChatId} (Device ID {$deviceId}): {$curlErr}");

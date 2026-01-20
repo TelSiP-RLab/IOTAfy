@@ -466,15 +466,15 @@ try {
                         <tbody>
                             <?php foreach ($devices as $device): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($device['name']); ?></td>
-                                <td><?php echo htmlspecialchars($device['ip']); ?></td>
-                                <td><?php echo htmlspecialchars($device['mac']); ?></td>
+                                <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($device['ip'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
                                 <td>
-                                    <span class="status-badge <?php echo $device['status'] === 'online' ? 'status-online' : 'status-offline'; ?>">
-                                        <?php echo ucfirst(htmlspecialchars($device['status'])); ?>
+                                    <span class="status-badge <?php echo ($device['status'] ?? '') === 'online' ? 'status-online' : 'status-offline'; ?>">
+                                        <?php echo ucfirst(htmlspecialchars($device['status'] ?? '')); ?>
                                     </span>
                                 </td>
-                                <td><?php echo htmlspecialchars($device['last_ping']); ?></td>
+                                <td><?php echo htmlspecialchars($device['last_ping'] ?? ''); ?></td>
                                 <td><?php echo htmlspecialchars($device['firmware_version'] ?? 'N/A'); ?></td>
                             </tr>
                             <?php endforeach; ?>
@@ -514,10 +514,10 @@ try {
                         <tbody>
                             <?php foreach ($group_devices as $device): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($device['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($device['mac']); ?></td>
-                                    <td><?php echo htmlspecialchars($device['internal_ip']); ?></td>
-                                    <td><?php echo htmlspecialchars($device['external_ip']); ?></td>
+                                    <td><?php echo htmlspecialchars($device['name'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($device['mac'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($device['internal_ip'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($device['external_ip'] ?? ''); ?></td>
                                     <td>
                                         <span class="badge badge-info">
                                             <?php echo htmlspecialchars($device['group_name'] ?? 'Direct'); ?>
@@ -532,7 +532,7 @@ try {
                                     </td>
                                     <td>
                                         <span class="badge <?php echo $device['assignment_type'] == 'Direct' ? 'badge-primary' : 'badge-info'; ?>">
-                                            <?php echo htmlspecialchars($device['assignment_type']); ?>
+                                            <?php echo htmlspecialchars($device['assignment_type'] ?? ''); ?>
                                         </span>
                                     </td>
                                 </tr>
@@ -564,7 +564,17 @@ try {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <center>IOTAfy<br>Devices Management Platform<br>created by<br>Ioannis Panagou</center>
+                    <center>
+                        <strong>IOTAfy</strong><br>
+                        Devices Management Platform<br>
+                        <br>
+                        <strong>University of West Attica</strong><br>
+                        <strong>TelSiP Research Lab</strong><br>
+                        <br>
+                        Created by: Ioannis Panagou<br>
+                        <br>
+                        &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -641,6 +651,18 @@ try {
         // Auto-refresh every 5 minutes
         setInterval(refreshDashboard, 300000);
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

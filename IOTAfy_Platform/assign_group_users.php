@@ -190,7 +190,7 @@ try {
                                     <div>
                                         <h5 class="mb-1"><?php echo htmlspecialchars($user['username']); ?></h5>
                                         <div class="user-info">
-                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?>
+                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email'] ?? ''); ?>
                                         </div>
                                         <div class="assigned-date">
                                             <i class="fas fa-calendar-alt"></i> Assigned: <?php echo date('d/m/Y', strtotime($user['assigned_date'])); ?>
@@ -224,7 +224,7 @@ try {
                                     <div>
                                         <h5 class="mb-1"><?php echo htmlspecialchars($user['username']); ?></h5>
                                         <div class="user-info">
-                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?>
+                                            <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email'] ?? ''); ?>
                                         </div>
                                     </div>
                                     <form method="POST" class="d-inline">
@@ -267,6 +267,18 @@ try {
             });
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

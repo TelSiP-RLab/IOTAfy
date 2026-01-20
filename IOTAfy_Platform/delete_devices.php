@@ -94,12 +94,24 @@ $device = $stmt->fetch(PDO::FETCH_ASSOC);
         <h1>Delete Device</h1>
         <div class="back-link"><a href="index.php">Back to Main Menu</a></div>
         <form method="POST" action="">
-            <input type="hidden" name="id" value="<?php echo htmlspecialchars($device['id']); ?>">
-            <p>Are you sure you want to delete the device <strong><?php echo htmlspecialchars($device['name']); ?></strong>?</p>
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($device['id'] ?? ''); ?>">
+            <p>Are you sure you want to delete the device <strong><?php echo htmlspecialchars($device['name'] ?? ''); ?></strong>?</p>
             <button type="submit">Delete Device</button>
         </form>
         <div class="back-link"><a href="index.php">Back to Main Menu</a></div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 

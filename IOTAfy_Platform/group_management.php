@@ -108,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['unassign_device'])) {
 
 // Handle group creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create') {
-    $name = trim($_POST['name']);
-    $description = trim($_POST['description']);
+    $name = trim((string)($_POST['name'] ?? ''));
+    $description = trim((string)($_POST['description'] ?? ''));
     
     if (empty($name)) {
         $message = "Group name is required.";
@@ -481,7 +481,17 @@ try {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <center>IOTAfy<br>Devices Management Platform<br>created by<br>Ioannis Panagou</center>
+                    <center>
+                        <strong>IOTAfy</strong><br>
+                        Devices Management Platform<br>
+                        <br>
+                        <strong>University of West Attica</strong><br>
+                        <strong>TelSiP Research Lab</strong><br>
+                        <br>
+                        Created by: Ioannis Panagou<br>
+                        <br>
+                        &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+                    </center>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -534,6 +544,18 @@ try {
             });
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-1">
+                <strong>University of West Attica</strong> | <strong>TelSiP Research Lab</strong>
+            </p>
+            <p class="mb-0 text-muted small">
+                &copy; <?php echo date('Y'); ?> IOTAfy Platform. All rights reserved.
+            </p>
+        </div>
+    </footer>
 </body>
 </html>
 
