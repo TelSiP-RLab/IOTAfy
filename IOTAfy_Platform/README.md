@@ -1,0 +1,1 @@
+# IOTAfy Devices Management Platform
