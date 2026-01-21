@@ -55,9 +55,7 @@ RUN echo "session.cookie_samesite = Lax" >> /usr/local/etc/php/conf.d/iotafy.ini
 WORKDIR /var/www/html
 
 # Copy application source code into the container
-# Όταν το docker-compose.yml είναι στο /opt/IOTAfy με context ./IOTAfy_Platform,
-# το build context είναι ο φάκελος IOTAfy_Platform, άρα το '.' εδώ είναι το IOTAfy_Platform.
-COPY . /var/www/html
+COPY IOTAfy_Platform/* /var/www/html/.
 
 # Make sure required directories exist (they may also be mounted as volumes)
 RUN mkdir -p data logs firmware \
@@ -68,6 +66,5 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
-
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
