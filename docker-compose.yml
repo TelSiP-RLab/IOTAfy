@@ -3,19 +3,14 @@ name: iotafy
 services:
   iotafy_platform:
     build:
-      # Τρέχουμε docker compose από τον φάκελο docker,
-      # άρα το .. είναι ο φάκελος IOTAfy_Platform
-      context: ..
-      dockerfile: docker/Dockerfile
-    container_name: iotafy_platform_web
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8084:80"
     # Ορίζουμε ΧΕΙΡΟΚΙΝΗΤΑ ένα σταθερό IOTAFY_APP_KEY.
     # ΑΛΛΑΞΕ την τιμή ΜΙΑ ΦΟΡΑ σε δικό σου δυνατό κλειδί
     # και μετά ΜΗΝ την ξαναλλάξεις, αλλιώς θα χαλάνε τα παλιά 2FA secrets.
-    environment:
-      - IOTAFY_APP_KEY=base64:CHANGE_ME_IOTAFY_APP_KEY_32_BYTES
-    # ΣΗΜΕΙΩΣΗ: Το SMTP configuration (msmtp) ορίζεται στο iotafy_monitor service
+    env_file: ".env"
     volumes:
       - ../data:/var/www/html/data
       - ../logs:/var/www/html/logs
@@ -24,33 +19,14 @@ services:
 
   iotafy_monitor:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       - iotafy_platform
     dns:
       - 8.8.8.8
       - 1.1.1.1
-    # MSMTP Configuration (για αποστολή emails από monitor_devices.php)
-    # Αν ορίσεις SMTP_HOST, το entrypoint θα δημιουργήσει αυτόματα το /etc/msmtprc
-    # Ξεσχολίασε τις παρακάτω γραμμές και προσάρμοσε τις τιμές:
-    environment:
-      - SMTP_HOST=192.168.100.15
-      - SMTP_PORT=25
-      - SMTP_FROM=noreply@iotafy.protontech.gr
-      - SMTP_AUTH=off
-      - SMTP_TLS=off
-      - SMTP_STARTTLS=off
-    # Παράδειγμα για SMTP με authentication (Gmail):
-    # environment:
-    #   - SMTP_HOST=smtp.gmail.com
-    #   - SMTP_PORT=587
-    #   - SMTP_USER=your-email@gmail.com
-    #   - SMTP_PASS=your-app-password
-    #   - SMTP_FROM=your-email@gmail.com
-    #   - SMTP_AUTH=on
-    #   - SMTP_TLS=on
-    #   - SMTP_STARTTLS=on
+    env_file: ".env"
     volumes:
       - ../data:/var/www/html/data
       - ../logs:/var/www/html/logs
