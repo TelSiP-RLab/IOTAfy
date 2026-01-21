@@ -31,6 +31,7 @@ services:
       - ../data:/var/www/html/data
       - ../logs:/var/www/html/logs
       - ../firmware:/var/www/html/firmware
+    entrypoint: []
     # Τρέχει το monitor_devices.php κάθε 60 δευτερόλεπτα χωρίς cron στο host
-    command: sh -c 'while true; do php /var/www/html/monitor_devices.php >> /var/www/html/logs/monitor.log 2>&1; sleep 60; done'
+    command: sh -c 'while true; do php /var/www/html/monitor_devices.php; sleep 60; done'
     restart: unless-stopped
