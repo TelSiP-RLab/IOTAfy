@@ -1,6 +1,7 @@
 # IOTAfy Platform
-# An ESP32-Based OTA Firmware Management Platform for Scalable IoT Deployments 
+An ESP32-Based OTA Firmware Management Platform for Scalable IoT Deployments 
 
+## Description
 IoT Device Management Platform with secure authentication and monitoring capabilities.
 
 ## Quick Start
