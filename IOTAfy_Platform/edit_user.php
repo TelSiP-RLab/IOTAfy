@@ -95,6 +95,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bindParam(':id', $user_id);
 
                 if ($stmt->execute()) {
+                    // Admin 2FA management actions
+                    if (isset($_POST['admin_disable_2fa'])) {
+                        try {
+                            $twofaStmt = $db->prepare("UPDATE users SET twofa_enabled = 0 WHERE id = :id");
+                            $twofaStmt->execute(['id' => $user_id]);
+                            logMessage("Admin {$_SESSION['username']} disabled 2FA for user {$username} (ID {$user_id}).");
+                        } catch (PDOException $e) {
+                            logMessage("Error disabling 2FA for user {$username} (ID {$user_id}): " . $e->getMessage());
+                        }
+                    } elseif (isset($_POST['admin_reset_2fa'])) {
+                        try {
+                            $twofaStmt = $db->prepare("UPDATE users SET twofa_enabled = 0, twofa_secret = NULL WHERE id = :id");
+                            $twofaStmt->execute(['id' => $user_id]);
+                            logMessage("Admin {$_SESSION['username']} reset 2FA for user {$username} (ID {$user_id}).");
+                        } catch (PDOException $e) {
+                            logMessage("Error resetting 2FA for user {$username} (ID {$user_id}): " . $e->getMessage());
+                        }
+                    }
+
                     // Update password if provided
                     if (!empty($password)) {
                         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -109,6 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $message = "User updated successfully.";
                     $messageType = "success";
                     logMessage("User $username updated successfully.");
+
+                    // Refresh user data so the form reflects latest values (including 2FA status)
+                    $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");
+                    $stmt->bindParam(':id', $user_id);
+                    $stmt->execute();
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 } else {
                     $message = "Failed to update user.";
                     $messageType = "danger";
@@ -290,6 +315,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <option value="1" <?php echo $user['is_active'] == 1 ? 'selected' : ''; ?>>Active</option>
                                 <option value="0" <?php echo $user['is_active'] == 0 ? 'selected' : ''; ?>>Inactive</option>
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-shield-alt"></i> Two-Factor Authentication (2FA)</label>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <?php if (!empty($user['twofa_enabled'])): ?>
+                                        <span class="badge badge-success"><i class="fas fa-check-circle"></i> Enabled</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary"><i class="fas fa-times-circle"></i> Disabled</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <?php if (!empty($user['twofa_enabled'])): ?>
+                                        <button type="submit" name="admin_disable_2fa" class="btn btn-warning btn-sm" onclick="return confirm('Disable 2FA for this user?');">
+                                            <i class="fas fa-ban"></i> Disable 2FA
+                                        </button>
+                                        <button type="submit" name="admin_reset_2fa" class="btn btn-danger btn-sm" onclick="return confirm('Reset 2FA for this user? This will clear the current 2FA secret and require re-enrollment.');">
+                                            <i class="fas fa-undo"></i> Reset 2FA
+                                        </button>
+                                    <?php else: ?>
+                                        <small class="text-muted">2FA is currently disabled. User can enable it from their profile.</small>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group">
