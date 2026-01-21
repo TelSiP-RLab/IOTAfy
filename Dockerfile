@@ -64,11 +64,10 @@ RUN mkdir -p data logs firmware \
     && chown -R www-data:www-data /var/www/html
 
 # Copy entrypoint script
-COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
-
