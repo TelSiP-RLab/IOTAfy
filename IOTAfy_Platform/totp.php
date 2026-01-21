@@ -109,7 +109,3 @@ if (!function_exists('totp_build_otpauth_url')) {
         return "otpauth://totp/{$label}?secret={$secretBase32}&issuer={$issuerParam}&period={$period}&digits={$digits}&algorithm={$algo}";
     }
 }
-
-?>
-
-

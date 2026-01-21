@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </li>
             </ul>
             <span class="navbar-text">
-                Logged in as: <?php echo htmlspecialchars($_SESSION['username'], ENT_QUOTES, 'UTF-8'); ?>
+                Logged in as: <?php echo htmlspecialchars($_SESSION['username'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
             </span>
         </div>
     </nav>
@@ -251,28 +251,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <h2 class="text-center mb-4">Edit User</h2>
                     
                     <?php if (!empty($message)): ?>
-                        <div class="alert alert-<?php echo $messageType; ?>">
-                            <?php echo htmlspecialchars($message); ?>
+                        <div class="alert alert-<?php echo htmlspecialchars($messageType ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php echo htmlspecialchars($message ?? '', ENT_QUOTES, 'UTF-8'); ?>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST" action="">
-                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id']); ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                        <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['id'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                         
                         <div class="form-group">
                             <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                            <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($user['username'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label for="full_name">Full Name</label>
-                            <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>" required>
+                            <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
 
                         <div class="form-group">
