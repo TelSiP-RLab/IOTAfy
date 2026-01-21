@@ -95,19 +95,24 @@ TESTEOF
 chmod +x /usr/local/bin/test-email.sh
 echo "Test email script created at /usr/local/bin/test-email.sh"
 
-# Auto-generate IOTAFY_APP_KEY if not provided or left as placeholder
-if [ -z "$IOTAFY_APP_KEY" ] || echo "$IOTAFY_APP_KEY" | grep -q "CHANGE_ME_GENERATE_A_REAL_KEY"; then
-  echo "Generating random IOTAFY_APP_KEY..."
-  if command -v php >/dev/null 2>&1; then
-    if KEY=$(php -r '$bytes = random_bytes(32); echo "base64:".base64_encode($bytes);'); then
-      IOTAFY_APP_KEY="$KEY"
-      export IOTAFY_APP_KEY
-    else
-      echo "Warning: failed to generate IOTAFY_APP_KEY via php."
-    fi
-  else
-    echo "Warning: php CLI not found, cannot auto-generate IOTAFY_APP_KEY."
-  fi
+# Check if IOTAFY_APP_KEY is properly configured
+if [ -z "$IOTAFY_APP_KEY" ] || echo "$IOTAFY_APP_KEY" | grep -q "YOUR_OWN_SECURE_KEY"; then
+  echo "=========================================================================="
+  echo "ERROR: IOTAFY_APP_KEY is not properly configured!"
+  echo "=========================================================================="
+  echo ""
+  echo "Please follow these steps:"
+  echo "  1. Copy .env.template to .env"
+  echo "  2. Generate a strong encryption key using:"
+  echo "     openssl rand -base64 32"
+  echo "     or"
+  echo "     php -r 'echo \"IOTAFY_APP_KEY=base64:\".base64_encode(random_bytes(32)).\"\n\";'"
+  echo "  3. Update IOTAFY_APP_KEY in your .env file with the generated key"
+  echo "  4. Restart the containers"
+  echo ""
+  echo "WARNING: Without a proper key, 2FA and encryption will NOT work!"
+  echo "=========================================================================="
+  echo ""
 fi
 
 # Initialize SQLite database from schema.sql if it does not exist
@@ -120,4 +125,3 @@ fi
 chown -R www-data:www-data data logs firmware
 
 exec "$@"
-
