@@ -1,6 +1,44 @@
 <?php
 require 'config.inc'; // Include the configuration file
 
+// Καθολικό logging σφαλμάτων/εξαιρέσεων στο monitor.log, ώστε να μη χρειάζεται redirect από το cron.
+set_error_handler(function ($severity, $message, $file, $line) {
+    // Αγνόησε σιωπηρά errors που έχουν κατασταλεί με @
+    if (!(error_reporting() & $severity)) {
+        return false;
+    }
+    $typeMap = [
+        E_ERROR             => 'E_ERROR',
+        E_WARNING           => 'E_WARNING',
+        E_PARSE             => 'E_PARSE',
+        E_NOTICE            => 'E_NOTICE',
+        E_CORE_ERROR        => 'E_CORE_ERROR',
+        E_CORE_WARNING      => 'E_CORE_WARNING',
+        E_COMPILE_ERROR     => 'E_COMPILE_ERROR',
+        E_COMPILE_WARNING   => 'E_COMPILE_WARNING',
+        E_USER_ERROR        => 'E_USER_ERROR',
+        E_USER_WARNING      => 'E_USER_WARNING',
+        E_USER_NOTICE       => 'E_USER_NOTICE',
+        E_STRICT            => 'E_STRICT',
+        E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
+        E_DEPRECATED        => 'E_DEPRECATED',
+        E_USER_DEPRECATED   => 'E_USER_DEPRECATED',
+    ];
+    $type = $typeMap[$severity] ?? (string)$severity;
+    monitorLog("PHP {$type}: {$message} in {$file}:{$line}");
+    // Επέτρεψε στο προεπιλεγμένο handler να τρέξει για fatal κ.λπ.
+    return false;
+});
+
+set_exception_handler(function ($e) {
+    monitorLog("Uncaught exception (" . get_class($e) . "): " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+    // Μπορεί να σταλεί και JSON σφάλματος αν τρέχει μέσω web
+    if (php_sapi_name() !== 'cli') {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Internal server error']);
+    }
+});
+
 /**
  * Sends a notification to the device owner via Email or Telegram, based on preferences.
  * Accepts a single device row that already includes user fields from JOIN.
