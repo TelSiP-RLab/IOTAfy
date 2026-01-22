@@ -32,6 +32,14 @@ define("OFFLINE_THRESHOLD_MINUTES", 15);
 // Separate threshold for still-online notification (minutes)
 define("STILL_ONLINE_MINUTES", 5);
 
+// Enhanced notifications configuration
+// Set to true to use enhanced notifications with rate limiting, retry mechanism, and better formatting
+define("USE_ENHANCED_NOTIFICATIONS", true);
+// Notification cooldown period in minutes (prevents spam notifications)
+define("NOTIFICATION_COOLDOWN_MINUTES", 5);
+// Maximum retry attempts for failed notifications
+define("NOTIFICATION_MAX_RETRIES", 3);
+
 
 /**
  * Establishes a connection to the SQLite database.

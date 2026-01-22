@@ -1,6 +1,11 @@
 <?php
 require 'config.inc'; // Include the configuration file
 
+// Load enhanced notifications if enabled
+if (defined('USE_ENHANCED_NOTIFICATIONS') && USE_ENHANCED_NOTIFICATIONS) {
+    require_once 'notifications_enhanced.php';
+}
+
 // Καθολικό logging σφαλμάτων/εξαιρέσεων στο monitor.log, ώστε να μη χρειάζεται redirect από το cron.
 set_error_handler(function ($severity, $message, $file, $line) {
     // Αγνόησε σιωπηρά errors που έχουν κατασταλεί με @
@@ -186,7 +191,11 @@ function updateDeviceStatus() {
 
                 // Send notification to the user
                 if (!empty($device['user_id'])) {
-                    sendNotification($device, $newStatus);
+                    if (defined('USE_ENHANCED_NOTIFICATIONS') && USE_ENHANCED_NOTIFICATIONS && function_exists('sendNotificationEnhanced')) {
+                        sendNotificationEnhanced($device, $newStatus);
+                    } else {
+                        sendNotification($device, $newStatus);
+                    }
                 }
 
                 // Manage marker lifecycle on transitions
@@ -230,7 +239,11 @@ function updateDeviceStatus() {
                         if ($lastChangeTs === null || $lastChangeTs <= strtotime('-' . $stillOnlineMinutes . ' minutes')) {
                             monitorLog("Still-online notification: user_id={$device['user_id']}, device_id={$device['id']}, minutes={$stillOnlineMinutes}");
                             if (!empty($device['user_id'])) {
-                                sendNotification($device, 'online');
+                                if (defined('USE_ENHANCED_NOTIFICATIONS') && USE_ENHANCED_NOTIFICATIONS && function_exists('sendNotificationEnhanced')) {
+                                    sendNotificationEnhanced($device, 'online');
+                                } else {
+                                    sendNotification($device, 'online');
+                                }
                             }
                             @file_put_contents($notifiedPath, (string)time()); // mark notified; resend only after status change
                         }
