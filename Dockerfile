@@ -55,7 +55,7 @@ RUN echo "session.cookie_samesite = Lax" >> /usr/local/etc/php/conf.d/iotafy.ini
 WORKDIR /var/www/html
 
 # Copy application source code into the container
-COPY IOTAfy_Platform/* /var/www/html/.
+ADD IOTAfy_Platform/ /var/www/html/
 
 # Make sure required directories exist (they may also be mounted as volumes)
 RUN mkdir -p data logs firmware \
