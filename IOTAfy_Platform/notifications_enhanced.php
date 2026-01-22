@@ -63,6 +63,7 @@ function buildNotificationMessage($deviceRow, $status) {
     $deviceName = $deviceRow['name'] ?? 'Unknown';
     $deviceId = $deviceRow['id'] ?? 'N/A';
     $ip = $deviceRow['ip'] ?? 'N/A';
+    $externalIp = $deviceRow['external_ip'] ?? null;
     $mac = $deviceRow['mac'] ?? 'N/A';
     $firmware = $deviceRow['firmware_version'] ?? 'N/A';
     $timestamp = date('Y-m-d H:i:s');
@@ -75,7 +76,10 @@ function buildNotificationMessage($deviceRow, $status) {
     $message .= "Status: {$statusText} {$statusEmoji}\n";
     $message .= "Time: {$timestamp}\n";
     $message .= "Device ID: {$deviceId}\n";
-    $message .= "IP Address: {$ip}\n";
+    $message .= "Internal IP Address: {$ip}\n";
+    if (!empty($externalIp)) {
+        $message .= "External IP Address: {$externalIp}\n";
+    }
     $message .= "MAC Address: {$mac}\n";
     $message .= "Firmware: {$firmware}\n";
     
@@ -99,6 +103,7 @@ function buildEmailHTML($deviceRow, $status) {
     $deviceName = htmlspecialchars($deviceRow['name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8');
     $deviceId = htmlspecialchars($deviceRow['id'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
     $ip = htmlspecialchars($deviceRow['ip'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
+    $externalIp = $deviceRow['external_ip'] ?? null;
     $mac = htmlspecialchars($deviceRow['mac'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
     $firmware = htmlspecialchars($deviceRow['firmware_version'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
     $timestamp = date('Y-m-d H:i:s');
@@ -136,7 +141,15 @@ function buildEmailHTML($deviceRow, $status) {
                     <tr><td>Status:</td><td><span class='status {$status}'>{$statusText}</span></td></tr>
                     <tr><td>Time:</td><td>{$timestamp}</td></tr>
                     <tr><td>Device ID:</td><td>{$deviceId}</td></tr>
-                    <tr><td>IP Address:</td><td>{$ip}</td></tr>
+                    <tr><td>Internal IP Address:</td><td>{$ip}</td></tr>
+    ";
+    
+    if (!empty($externalIp)) {
+        $externalIpEscaped = htmlspecialchars($externalIp, ENT_QUOTES, 'UTF-8');
+        $html .= "<tr><td>External IP Address:</td><td>{$externalIpEscaped}</td></tr>";
+    }
+    
+    $html .= "
                     <tr><td>MAC Address:</td><td>{$mac}</td></tr>
                     <tr><td>Firmware Version:</td><td>{$firmware}</td></tr>
     ";
@@ -173,6 +186,7 @@ function buildTelegramMessage($deviceRow, $status) {
     $deviceName = $deviceRow['name'] ?? 'Unknown';
     $deviceId = $deviceRow['id'] ?? 'N/A';
     $ip = $deviceRow['ip'] ?? 'N/A';
+    $externalIp = $deviceRow['external_ip'] ?? null;
     $mac = $deviceRow['mac'] ?? 'N/A';
     $firmware = $deviceRow['firmware_version'] ?? 'N/A';
     $timestamp = date('Y-m-d H:i:s');
@@ -185,7 +199,10 @@ function buildTelegramMessage($deviceRow, $status) {
     $message .= "*Status:* {$statusText} {$statusEmoji}\n";
     $message .= "*Time:* {$timestamp}\n";
     $message .= "*Device ID:* `{$deviceId}`\n";
-    $message .= "*IP:* `{$ip}`\n";
+    $message .= "*Internal IP:* `{$ip}`\n";
+    if (!empty($externalIp)) {
+        $message .= "*External IP:* `{$externalIp}`\n";
+    }
     $message .= "*MAC:* `{$mac}`\n";
     $message .= "*Firmware:* `{$firmware}`\n";
     
@@ -416,5 +433,74 @@ function sendNotificationEnhanced($deviceRow, $status) {
         ($results['telegram'] === null || ($results['telegram'] && $results['telegram']['success']))
     );
     
+    // Save notification history to database
+    saveNotificationHistory($userId, $deviceId, $status, $results);
+    
     return $results;
+}
+
+/**
+ * Saves notification history to the database
+ * 
+ * @param int $userId User ID
+ * @param int $deviceId Device ID
+ * @param string $status Status ('online' or 'offline')
+ * @param array $results Results from sendNotificationEnhanced
+ * @return void
+ */
+function saveNotificationHistory($userId, $deviceId, $status, $results) {
+    try {
+        $db = getDbConnection();
+        
+        // Determine notification type
+        $emailSuccess = ($results['email'] && $results['email']['success']) ? true : false;
+        $telegramSuccess = ($results['telegram'] && $results['telegram']['success']) ? true : false;
+        
+        $types = [];
+        if ($results['email'] !== null) {
+            $types[] = 'email';
+        }
+        if ($results['telegram'] !== null) {
+            $types[] = 'telegram';
+        }
+        
+        // If both were attempted, save as 'both', otherwise use the single type
+        $notificationType = count($types) === 2 ? 'both' : ($types[0] ?? 'none');
+        
+        // Determine overall success
+        $overallSuccess = ($results['email'] === null || $emailSuccess) && 
+                         ($results['telegram'] === null || $telegramSuccess);
+        
+        // Build error message if any failed
+        $errorMessages = [];
+        if ($results['email'] && !$results['email']['success']) {
+            $errorMessages[] = 'Email: ' . ($results['email']['error'] ?? 'Unknown error');
+        }
+        if ($results['telegram'] && !$results['telegram']['success']) {
+            $errorMessages[] = 'Telegram: ' . ($results['telegram']['error'] ?? 'Unknown error');
+        }
+        $errorMessage = !empty($errorMessages) ? implode('; ', $errorMessages) : null;
+        
+        // Insert notification history
+        $stmt = $db->prepare("
+            INSERT INTO notifications (user_id, device_id, type, status, message, success, error_message)
+            VALUES (:user_id, :device_id, :type, :status, :message, :success, :error_message)
+        ");
+        
+        $message = $results['device_name'] . " is now " . $status;
+        
+        $stmt->execute([
+            ':user_id' => $userId,
+            ':device_id' => $deviceId,
+            ':type' => $notificationType,
+            ':status' => $status,
+            ':message' => $message,
+            ':success' => $overallSuccess ? 1 : 0,
+            ':error_message' => $errorMessage
+        ]);
+        
+    } catch (Throwable $e) {
+        // Don't break notification flow if history save fails
+        monitorLog("Failed to save notification history: " . $e->getMessage());
+    }
 }

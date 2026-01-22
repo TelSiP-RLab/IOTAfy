@@ -53,6 +53,8 @@ function getDbConnection() {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         // Ensure 2FA-related columns exist (lazy migration)
         ensureTwoFactorColumns($db);
+        // Ensure notifications table exists (lazy migration)
+        ensureNotificationsTable($db);
         return $db;
     } catch (PDOException $e) {
         logMessage("Database connection error: " . $e->getMessage());
@@ -263,6 +265,46 @@ function ensureTwoFactorColumns(PDO $db) {
     } catch (Throwable $e) {
         // Do not break application if migration fails; just log.
         logMessage("2FA migration check failed: " . $e->getMessage());
+    }
+}
+
+/**
+ * Ensures the notifications table exists in the database.
+ * Creates it if it doesn't exist (lazy migration).
+ *
+ * @param PDO $db
+ * @return void
+ */
+function ensureNotificationsTable(PDO $db) {
+    try {
+        // Check if table exists
+        $stmt = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='notifications'");
+        if ($stmt->fetch() === false) {
+            // Table doesn't exist, create it
+            $db->exec("
+                CREATE TABLE notifications (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    device_id INTEGER NOT NULL,
+                    type TEXT NOT NULL,
+                    status TEXT NOT NULL,
+                    message TEXT,
+                    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    success INTEGER DEFAULT 0,
+                    error_message TEXT,
+                    FOREIGN KEY (user_id) REFERENCES users(id),
+                    FOREIGN KEY (device_id) REFERENCES devices(id)
+                )
+            ");
+            // Create indexes for better performance
+            $db->exec("CREATE INDEX idx_notifications_user_id ON notifications(user_id)");
+            $db->exec("CREATE INDEX idx_notifications_device_id ON notifications(device_id)");
+            $db->exec("CREATE INDEX idx_notifications_sent_at ON notifications(sent_at)");
+            logMessage("Notifications table created successfully");
+        }
+    } catch (Throwable $e) {
+        // Do not break application if migration fails; just log.
+        logMessage("Notifications table migration check failed: " . $e->getMessage());
     }
 }
 
