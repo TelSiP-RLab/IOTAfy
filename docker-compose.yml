@@ -34,8 +34,11 @@ services:
       - iotafy_logs:/var/www/html/logs
       - iotafy_firmware:/var/www/html/firmware
     entrypoint: []
-    # Τρέχει το monitor_devices.php κάθε 60 δευτερόλεπτα χωρίς cron στο host
-    command: sh -c 'while true; do php /var/www/html/monitor_devices.php; sleep 60; done'
+    # Το entrypoint.sh θα τρέξει πρώτα για να διαμορφώσει msmtp (μόνο στο monitor)
+    # και μετά θα τρέξει το monitoring loop
+    # Το entrypoint.sh έχει exec "$@" στο τέλος, οπότε θα εκτελέσει το command
+    # Καλούμε ρητά το entrypoint.sh μέσα στο command αφού έχουμε entrypoint: []
+    command: /usr/local/bin/docker-entrypoint.sh sh -c 'while true; do php /var/www/html/monitor_devices.php; sleep 60; done'
     restart: unless-stopped
 
 volumes:
