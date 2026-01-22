@@ -1,7 +1,7 @@
 name: iotafy
 
 services:
-  iotafy_platform:
+  platform:
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,12 +12,12 @@ services:
     # και μετά ΜΗΝ την ξαναλλάξεις, αλλιώς θα χαλάνε τα παλιά 2FA secrets.
     env_file: ".env"
     volumes:
-      - ../data:/var/www/html/data
-      - ../logs:/var/www/html/logs
-      - ../firmware:/var/www/html/firmware
+      - iotafy_data:/var/www/html/data:rw
+      - iotafy_logs:/var/www/html/logs:rw
+      - iotafy_firmware:/var/www/html/firmware:rw
     restart: unless-stopped
 
-  iotafy_monitor:
+  monitor:
     build:
       context: .
       dockerfile: Dockerfile
@@ -30,10 +30,15 @@ services:
     environment:
       - CONTAINER_TYPE=monitor
     volumes:
-      - ../data:/var/www/html/data
-      - ../logs:/var/www/html/logs
-      - ../firmware:/var/www/html/firmware
+      - iotafy_data:/var/www/html/data:ro
+      - iotafy_logs:/var/www/html/logs:rw
+      - iotafy_firmware:/var/www/html/firmware:ro
     # Τρέχει το monitor_devices.php κάθε 60 δευτερόλεπτα χωρίς cron στο host
     # Το entrypoint.sh θα τρέξει πρώτα για να διαμορφώσει msmtp (μόνο στο monitor)
     command: sh -c 'while true; do php /var/www/html/monitor_devices.php; sleep 60; done'
     restart: unless-stopped
+
+volumes:
+  iotafy_data:
+  iotafy_logs:
+  iotafy_firmware:
