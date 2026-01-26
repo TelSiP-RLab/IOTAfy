@@ -12,9 +12,9 @@ services:
     # και μετά ΜΗΝ την ξαναλλάξεις, αλλιώς θα χαλάνε τα παλιά 2FA secrets.
     env_file: ".env"
     volumes:
-      - iotafy_data:/var/www/html/data
-      - iotafy_logs:/var/www/html/logs
-      - iotafy_firmware:/var/www/html/firmware
+      - data:/var/www/html/data
+      - logs:/var/www/html/logs
+      - firmware:/var/www/html/firmware
     restart: unless-stopped
 
   monitor:
@@ -30,9 +30,9 @@ services:
     environment:
       - CONTAINER_TYPE=monitor
     volumes:
-      - iotafy_data:/var/www/html/data
-      - iotafy_logs:/var/www/html/logs
-      - iotafy_firmware:/var/www/html/firmware
+      - data:/var/www/html/data
+      - logs:/var/www/html/logs
+      - firmware:/var/www/html/firmware
     entrypoint: []
     # Το entrypoint.sh θα τρέξει πρώτα για να διαμορφώσει msmtp (μόνο στο monitor)
     # και μετά θα τρέξει το monitoring loop
