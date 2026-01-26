@@ -42,6 +42,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  iotafy_data:
-  iotafy_logs:
-  iotafy_firmware:
+  data:
+  logs:
+  firmware:
